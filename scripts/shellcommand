@@ -1,0 +1,4 @@
+#!/bin/bash
+
+capturedOutput="$(eval "$@")"
+tmux set-buffer -b shellcommand "$capturedOutput" \; paste-buffer -b shellcommand
