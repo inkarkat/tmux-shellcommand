@@ -19,8 +19,16 @@ shellcommand_key="${shellcommand_key:-$default_shellcommand_key}"
 default_shellcommand_table=''
 shellcommand_table="$(tmux show-option -gqv '@shellcommand_table')"
 shellcommand_table="${shellcommand_table:-$default_shellcommand_table}"
+# XXX: tmux doesn't offer shell escaping for the prompt responses, so handling
+# of quoting is difficult. Best we can do is embedding the response in a literal
+# here-document; this preserves single quotes. Double-quotes have to be manually
+# escaped, presumably because of the run-shell wrapper: $ echo \"foo bar\"
 tmux bind-key ${shellcommand_table:+-T "$shellcommand_table"} "$shellcommand_key" \
-    command-prompt -p '$' "run-shell '${SCRIPTS_DIR_QUOTED}/shellcommand.sh ${hasRecall:+$command_history_quoted} ${hasRecall:+$output_history_quoted} %1'"
+    command-prompt -p '$' "run-shell \"${SCRIPTS_DIR_QUOTED}/shellcommand.sh ${hasRecall:+$command_history_quoted} ${hasRecall:+$output_history_quoted} <<'EOF'
+%1
+EOF
+\""
+
 
 default_shellcommand_repeat_key='~'
 shellcommand_repeat_key="$(tmux show-option -gqv '@shellcommand_repeat_key')"
