@@ -2,7 +2,11 @@
 
 commandHistory="${1?}"; shift
 outputHistory="${1?}"; shift
-shellcommand="${1?}"; shift
+if [ $# -eq 0 -o "$1" = '-' ]; then
+    shellcommand="$(< /dev/stdin)"
+else
+    shellcommand="${1?}"; shift
+fi
 [ "$shellcommand" ] || exit 0
 
 escapeNewline()
@@ -18,4 +22,8 @@ capturedOutput="$(eval "$shellcommand" 2>&1)"
 storeHistory "$commandHistory" "$shellcommand"
 storeHistory "$outputHistory" "$capturedOutput"
 
-exec tmux set-buffer -b shellcommand "$capturedOutput" \; paste-buffer -b shellcommand
+if [ -z "$capturedOutput" ]; then
+    exec tmux display-message 'No output'
+else
+    exec tmux set-buffer -b shellcommand "$capturedOutput" \; paste-buffer -b shellcommand
+fi
