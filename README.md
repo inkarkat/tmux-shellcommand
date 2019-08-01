@@ -31,6 +31,23 @@ Add this line to the bottom of `.tmux.conf`:
 
 Reload tmux environment with: `$ tmux source-file ~/.tmux.conf`. You should now be able to use the plugin.
 
+### Dependencies
+
+- Optional: [command-line fuzzy finder](https://github.com/junegunn/fzf) (in particular its `fzf-tmux` command) to recall any previous command-line / captured output
+
+### Configuration
+
+- `@shellcommand_command_history` &mdash; filespec (default `~/.local/share/tmux-shellcommand/commands`) where the entered command-lines are stored; if empty, nothing is stored
+- `@shellcommand_output_history` &mdash; filespec (default `~/.local/share/tmux-shellcommand/output`) where the captured outputs are stored; if empty, nothing is stored
+- `@shellcommand_key` &mdash; tmux key to which the main plugin functionality of prompting for a command-line is bound
+- `@shellcommand_table` &mdash; tmux client key table for `@shellcommand_key`; you can use this to define a sequence of keys to trigger the command
+- `@shellcommand_repeat_key` &mdash; tmux key for inserting the last captured output again
+- `@shellcommand_repeat_table` &mdash; tmux client key table for `@shellcommand_repeat_key`; you can use this to define a sequence of keys to trigger the command; the default mappings require this definition: `bind-key g switch-client -T gtable`
+- `@shellcommand_recall_command_key` &mdash; tmux key for recalling a command-line from any previously entered one via fuzzy search
+- `@shellcommand_recall_command_table` &mdash; tmux client key table for `@shellcommand_recall_command_key`; you can use this to define a sequence of keys to trigger the command; the default mappings require this definition: `bind-key G switch-client -T Gtable`
+- `@shellcommand_recall_output_key` &mdash; tmux key for recalling an output from any previously captured one via fuzzy search
+- `@shellcommand_recall_output_table` &mdash; tmux client key table for `@shellcommand_recall_output_key`; you can use this to define a sequence of keys to trigger the command; the default mappings require this definition: `bind-key M-g switch-client -T Mgtable`
+
 ### License
 
 [GPLv3](LICENSE)
