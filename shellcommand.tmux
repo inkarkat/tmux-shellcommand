@@ -46,7 +46,7 @@ default_shellcommand_recall_command_table='Gtable'
 shellcommand_recall_command_table="$(tmux show-option -gqv '@shellcommand_recall_command_table')"
 shellcommand_recall_command_table="${shellcommand_recall_command_table:-$default_shellcommand_recall_command_table}"
 tmux bind-key ${shellcommand_recall_command_table:+-T "$shellcommand_recall_command_table"} "$shellcommand_recall_command_key" \
-    run-shell "tmux set-buffer -b shellcommand \"\$(${SCRIPTS_DIR_QUOTED}/recall.sh $command_history_quoted t)\" \; paste-buffer -b shellcommand"
+    run-shell "tmux set-buffer -b shellcommand \"\$(${SCRIPTS_DIR_QUOTED}/recall.sh $command_history_quoted t)\"; tmux paste-buffer -b shellcommand 2>/dev/null || true"
 
 default_shellcommand_recall_output_key='~'
 shellcommand_recall_output_key="$(tmux show-option -gqv '@shellcommand_recall_output_key')"
@@ -55,4 +55,4 @@ default_shellcommand_recall_output_table='Mgtable'
 shellcommand_recall_output_table="$(tmux show-option -gqv '@shellcommand_recall_output_table')"
 shellcommand_recall_output_table="${shellcommand_recall_output_table:-$default_shellcommand_recall_output_table}"
 tmux bind-key ${shellcommand_recall_output_table:+-T "$shellcommand_recall_output_table"} "$shellcommand_recall_output_key" \
-    run-shell "tmux set-buffer -b shellcommand \"\$(${SCRIPTS_DIR_QUOTED}/recall.sh $output_history_quoted '')\" \; paste-buffer -b shellcommand"
+    run-shell "tmux set-buffer -b shellcommand \"\$(${SCRIPTS_DIR_QUOTED}/recall.sh $output_history_quoted '')\"; tmux paste-buffer -b shellcommand 2>/dev/null || true"
