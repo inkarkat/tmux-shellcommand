@@ -28,7 +28,7 @@ if [ -n "$commandHistory" -o -n "$outputHistory" ]; then
     }
 
     default_history_size=100
-    history_size="$(tmux show-option -gqv '@shellcommand_history_size')"
+    history_size="$(tmux show-option -gv '@shellcommand_history_size' 2>/dev/null)" || unset history_size
     history_size="${history_size-$default_history_size}"
 
     storeHistory "$commandHistory" "$shellcommand"
