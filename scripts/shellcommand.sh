@@ -21,7 +21,7 @@ if [ -n "$commandHistory" -o -n "$outputHistory" ]; then
 	if [ -n "$1" -a -n "$2" ]; then
 	    printf '%s\n' "$(escapeNewline "$2")" >> "$1"
 	    if [ "$history_size" ]; then
-		TMPFILE="$(mktemp --tmpdir "$(basename -- "$0")-XXXXXX" 2>/dev/null || echo "${TEMP:-/tmp}/$(basename -- "$0").$$$RANDOM")"
+		TMPFILE="$(mktemp --tmpdir "$(basename -- "$0")-XXXXXX" 2>/dev/null || echo "${TMPDIR:-/tmp}/$(basename -- "$0").$$$RANDOM")"
 		tail -n "$history_size" "$1" > "$TMPFILE" && cp --force -- "$TMPFILE" "$1" && rm -- force -- "$TMPFILE"
 	    fi
 	fi
