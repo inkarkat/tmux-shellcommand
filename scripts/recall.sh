@@ -11,7 +11,8 @@ if ! recalled="$(fzf-tmux < "$historyFilespec")"; then
 fi
 
 if [ "$isReexecute" ]; then
-    eval "$(echo -en "${recalled/#-/\x2d}")"
+    workingDirspec="$(tmux display-message -p "#{pane_current_path}")"
+    cd "$workingDirspec" && eval "$(echo -en "${recalled/#-/\x2d}")"
 else
     echo -en "${recalled/#-/\x2d}"
 fi

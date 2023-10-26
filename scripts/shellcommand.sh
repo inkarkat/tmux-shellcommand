@@ -11,7 +11,8 @@ else
 fi
 [ -n "$shellcommand" ] || exit 99
 
-capturedOutput="$(eval "$shellcommand" 2>&1)"
+workingDirspec="$(tmux display-message -p "#{pane_current_path}")"
+capturedOutput="$(cd "$workingDirspec" && eval "$shellcommand" 2>&1)"
 
 if [ -n "$commandHistoryFilespec" -o -n "$outputHistory" ]; then
     escapeNewline()
