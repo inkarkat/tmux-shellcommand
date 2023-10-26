@@ -58,9 +58,9 @@ keydef "$shellcommand_repeat_table" "$shellcommand_repeat_key" paste-buffer -b s
 shellcommand_recall_command_key="$(get_tmux_option '@shellcommand_recall_command_key' '~' t)"
 shellcommand_recall_command_table="$(get_tmux_option '@shellcommand_recall_command_table' 'Gtable' t)"
 keydef "$shellcommand_recall_command_table" "$shellcommand_recall_command_key" \
-    run-shell "tmux set-buffer -b shellcommand \"\$(${quotedScriptDir}/recall.sh $quotedCommandHistory t)\"; tmux paste-buffer -b shellcommand 2>/dev/null || true"
+    run-shell -b "tmux set-buffer -b shellcommand \"\$(${quotedScriptDir}/recall.sh $quotedCommandHistory t)\"; tmux paste-buffer -b shellcommand 2>/dev/null || true"
 
 shellcommand_recall_output_key="$(get_tmux_option '@shellcommand_recall_output_key' '~' t)"
 shellcommand_recall_output_table="$(get_tmux_option '@shellcommand_recall_output_table' 'Mgtable' t)"
 keydef "$shellcommand_recall_output_table" "$shellcommand_recall_output_key" \
-    run-shell "tmux set-buffer -b shellcommand \"\$(${quotedScriptDir}/recall.sh $quotedOutputHistory '')\"; tmux paste-buffer -b shellcommand 2>/dev/null || true"
+    run-shell -b "tmux set-buffer -b shellcommand \"\$(${quotedScriptDir}/recall.sh $quotedOutputHistory '')\"; tmux paste-buffer -b shellcommand 2>/dev/null || true"
