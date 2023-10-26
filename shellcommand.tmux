@@ -28,15 +28,9 @@ shellcommand_key="${shellcommand_key-$default_shellcommand_key}"
 default_shellcommand_table=''
 shellcommand_table="$(tmux show-option -gv '@shellcommand_table' 2>/dev/null)" || unset shellcommand_table
 shellcommand_table="${shellcommand_table-$default_shellcommand_table}"
-# XXX: tmux doesn't offer shell escaping for the prompt responses, so handling
-# of quoting is difficult. Best we can do is embedding the response in a literal
-# here-document; this preserves single quotes. Double-quotes have to be manually
-# escaped, presumably because of the run-shell wrapper: $ echo \"foo bar\"
 keydef "$shellcommand_table" "$shellcommand_key" \
-    command-prompt -p '$' "run-shell \"${SCRIPTS_DIR_QUOTED}/shellcommand.sh ${hasRecall:+$command_history_quoted} ${hasRecall:+$output_history_quoted} <<'EOF'
-%1
-EOF
-\""
+    command-prompt -p '$' \
+	"set -g @queried_command \"%%%\" ; run-shell \"${SCRIPTS_DIR_QUOTED}/shellcommand.sh ${hasRecall:+$command_history_quoted} ${hasRecall:+$output_history_quoted}\""
 
 
 default_shellcommand_repeat_key='~'

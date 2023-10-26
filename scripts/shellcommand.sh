@@ -2,12 +2,14 @@
 
 commandHistory="${1?}"; shift
 outputHistory="${1?}"; shift
-if [ $# -eq 0 -o "$1" = '-' ]; then
+if [ $# -eq 0 ]; then
+    shellcommand="$(tmux show-options -gv @queried_command)"
+elif [ "$1" = '-' ]; then
     shellcommand="$(< /dev/stdin)"
 else
     shellcommand="${1?}"; shift
 fi
-[ "$shellcommand" ] || exit 0
+[ -n "$shellcommand" ] || exit 99
 
 capturedOutput="$(eval "$shellcommand" 2>&1)"
 
