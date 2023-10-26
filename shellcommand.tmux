@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+fail() {
+    tmux display-message "ERROR: tmux-shellcommand ${1:-encountered an unspecified problem.}"
+    exit 3
+}
+
 get_tmux_option() {
 	local option="${1:?}"; shift
 	local default_value="${1?}"; shift
@@ -27,19 +32,22 @@ keydef()
 }
 
 hasRecall=; type -t fzf-tmux >/dev/null && hasRecall=t
-CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-printf -v SCRIPTS_DIR_QUOTED %q "${CURRENT_DIR}/scripts"
 
-HISTORY_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/tmux-shellcommand"
-printf -v command_history_quoted %q "$(get_tmux_option '@shellcommand_command_history' "${HISTORY_DIR}/commands")"
-printf -v output_history_quoted %q "$(get_tmux_option '@shellcommand_output_history' "${HISTORY_DIR}/outputs")"
+readonly projectDir="$([ "${BASH_SOURCE[0]}" ] && cd "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+[ -d "$projectDir" ] || fail 'cannot determine script directory!'
+printf -v quotedScriptDir '%q' "${projectDir}/scripts"
+
+readonly historyDirspec="${XDG_DATA_HOME:-$HOME/.local/share}/tmux-shellcommand"
+[ -d "$historyDirspec" ] || mkdir --parents -- "$historyDirspec" || fail "cannot initialize data store at $historyDirspec"
+printf -v quotedCommandHistory %q "$(get_tmux_option '@shellcommand_command_history' "${historyDirspec}/commands")"
+printf -v quotedOutputHistory %q "$(get_tmux_option '@shellcommand_output_history' "${historyDirspec}/outputs")"
 
 
 shellcommand_key="$(get_tmux_option '@shellcommand_key' '~' t)"
 shellcommand_table="$(get_tmux_option '@shellcommand_table' '' t)"
 keydef "$shellcommand_table" "$shellcommand_key" \
     command-prompt -p '$' \
-	"set -g @queried_command \"%%%\" ; run-shell \"${SCRIPTS_DIR_QUOTED}/shellcommand.sh ${hasRecall:+$command_history_quoted} ${hasRecall:+$output_history_quoted}\""
+	"set -g @queried_command \"%%%\" ; run-shell \"${quotedScriptDir}/shellcommand.sh ${hasRecall:+$quotedCommandHistory} ${hasRecall:+$quotedOutputHistory}\""
 
 
 shellcommand_repeat_key="$(get_tmux_option '@shellcommand_repeat_key' '~' t)"
@@ -50,9 +58,9 @@ keydef "$shellcommand_repeat_table" "$shellcommand_repeat_key" paste-buffer -b s
 shellcommand_recall_command_key="$(get_tmux_option '@shellcommand_recall_command_key' '~' t)"
 shellcommand_recall_command_table="$(get_tmux_option '@shellcommand_recall_command_table' 'Gtable' t)"
 keydef "$shellcommand_recall_command_table" "$shellcommand_recall_command_key" \
-    run-shell "tmux set-buffer -b shellcommand \"\$(${SCRIPTS_DIR_QUOTED}/recall.sh $command_history_quoted t)\"; tmux paste-buffer -b shellcommand 2>/dev/null || true"
+    run-shell "tmux set-buffer -b shellcommand \"\$(${quotedScriptDir}/recall.sh $quotedCommandHistory t)\"; tmux paste-buffer -b shellcommand 2>/dev/null || true"
 
 shellcommand_recall_output_key="$(get_tmux_option '@shellcommand_recall_output_key' '~' t)"
 shellcommand_recall_output_table="$(get_tmux_option '@shellcommand_recall_output_table' 'Mgtable' t)"
 keydef "$shellcommand_recall_output_table" "$shellcommand_recall_output_key" \
-    run-shell "tmux set-buffer -b shellcommand \"\$(${SCRIPTS_DIR_QUOTED}/recall.sh $output_history_quoted '')\"; tmux paste-buffer -b shellcommand 2>/dev/null || true"
+    run-shell "tmux set-buffer -b shellcommand \"\$(${quotedScriptDir}/recall.sh $quotedOutputHistory '')\"; tmux paste-buffer -b shellcommand 2>/dev/null || true"
